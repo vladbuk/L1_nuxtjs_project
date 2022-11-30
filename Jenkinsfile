@@ -28,12 +28,6 @@ pipeline {
                 sh 'yarn generate'
             }
         }     
-        stage('Testing') {
-            steps {
-                echo 'Testing'
-                sh 'yarn test'
-            }
-        }
         stage('Archiving') {
             steps {
 		            echo 'Archiving'
