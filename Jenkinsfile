@@ -9,6 +9,9 @@ pipeline {
         stage('Preparing') {
             steps {
                 echo 'Preparing'
+                dir('$WORKSPACE') {
+                    deleteDir()
+                }
                 //cleanWs()
                 //sh 'cd $WORKSPACE'
                 //sh 'rm -rf dist'
