@@ -13,7 +13,8 @@ pipeline {
         stage('Building') {
             steps {
                 echo 'Building'
-                sh 'npm generate'
+                sh 'npm run build'
+                sh 'npm run generate'
             }
         }        
         stage('Archiving') {
