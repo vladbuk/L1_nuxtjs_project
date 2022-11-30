@@ -9,12 +9,12 @@ pipeline {
         stage('Preparing') {
             steps {
                 echo 'Preparing'
-                dir('$WORKSPACE') {
+                /*dir('$WORKSPACE') {
                     deleteDir()
-                }
+                }*/
                 //cleanWs()
                 //sh 'cd $WORKSPACE'
-                //sh 'rm -rf dist'
+                sh 'rm -rf dist'
                 git branch: 'main', url: 'https://github.com/vladbuk/L1_nuxtjs_project.git'
                 //sh 'chown -R 113:119 .npm'
                 //sh 'npm init --yes'
