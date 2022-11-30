@@ -10,6 +10,7 @@ pipeline {
                 //sh 'rm -rf dist'
                 git branch: 'main', url: 'https://github.com/vladbuk/L1_nuxtjs_project.git'
                 //sh 'npm cache clean --force '
+                sh 'npm init --yes'
                 sh 'npm install'
             }
         }
