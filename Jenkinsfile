@@ -18,14 +18,14 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/vladbuk/L1_nuxtjs_project.git'
                 //sh 'chown -R 113:119 .npm'
                 //sh 'npm init --yes'
-                sh 'yarn install'
+                sh 'npm install'
             }
         }
         stage('Building') {
             steps {
                 echo 'Building'
-                sh 'yarn build'
-                sh 'yarn generate'
+                sh 'npm run build'
+                sh 'npm run generate'
             }
         }        
         stage('Archiving') {
