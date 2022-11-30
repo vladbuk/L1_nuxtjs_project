@@ -27,10 +27,16 @@ pipeline {
                 sh 'yarn build'
                 sh 'yarn generate'
             }
-        }        
+        }     
+        stage('Testing') {
+            steps {
+                echo 'Testing'
+                sh 'yarn test'
+            }
+        }
         stage('Archiving') {
             steps {
-		echo 'Archiving'
+		            echo 'Archiving'
                 archiveArtifacts artifacts: 'dist/**/*', followSymlinks: false
             }
         }
