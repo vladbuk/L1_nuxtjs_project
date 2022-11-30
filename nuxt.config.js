@@ -15,6 +15,10 @@ export default {
 	{ rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=PT+Sans:300,400,700,800'}
     ]
   },
+  server: {
+    port: 8080, // default: 3000
+    host: '0.0.0.0' // default: localhost
+  },
   /*
   ** Customize the progress-bar color
   */
