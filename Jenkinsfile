@@ -1,5 +1,8 @@
 pipeline {
-    agent { dockerfile true }
+    agent {
+        docker { image node:14 }
+    }
+    //agent { dockerfile true }
     //agent any
 
     stages {
