@@ -1,13 +1,12 @@
 FROM node:14
 
-RUN apt-get update && apt-get install -y zip mc iputils-ping
-
 WORKDIR /app
 
-COPY ./docker-entrypoint.sh /
+COPY ./ /app/
 
-RUN chmod +x /docker-entrypoint.sh
+RUN apt-get update && apt-get install -y zip mc iputils-ping && \
+    yarn install && yarn build
 
-ENTRYPOINT ["/docker-entrypoint.sh"] 
+ENTRYPOINT ["yarn", "start"] 
 
 EXPOSE 8080
