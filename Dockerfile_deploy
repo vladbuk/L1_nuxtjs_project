@@ -2,10 +2,12 @@ FROM node:14
 
 RUN apt-get update && apt-get install -y zip mc iputils-ping
 
-WORKDIR /  
+WORKDIR /app
 
-RUN npm run install 
+COPY ./docker-entrypoint.sh /
 
-ENTRYPOINT ["npm", "run", "start"] 
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"] 
 
 EXPOSE 8080
