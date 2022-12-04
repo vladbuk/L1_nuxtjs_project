@@ -10,10 +10,10 @@ if [[ $CONTAINER_ID ]]
 then
     docker rm -f $CONTAINER_ID
     echo "Container $CONTAINER_ID deleted and will be created again."
-    docker run -d -t --name nuxt-docker -p 8080:8080 nuxt-docker
+    docker run -d -t --name nuxt-docker --restart always -p 8080:8080 nuxt-docker
 else
     echo -e "Container does not exist. It will be created.\n"
-    docker run -d -t --name nuxt-docker -p 8080:8080 nuxt-docker 
+    docker run -d -t --name nuxt-docker  --restart always -p 8080:8080 nuxt-docker 
 fi
 
 CONTAINER_ID=$CONTAINER_ID
