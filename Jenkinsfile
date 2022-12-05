@@ -10,7 +10,8 @@ pipeline {
         stage('Building') {
             steps {
                 echo 'Building'
-                sh 'rm -rf dist node_modules'
+                cleanWs()
+                //sh 'rm -rf dist node_modules'
                 git branch: 'docker', url: 'https://github.com/vladbuk/L1_nuxtjs_project.git'
                 sh 'docker build -t vladbuk/nuxt-docker:${BUILD_NUMBER} -f Dockerfile_deploy .'
             }
