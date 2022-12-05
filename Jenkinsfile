@@ -44,7 +44,7 @@ pipeline {
                         echo -e "Container id = $CONTAINER_ID\n"
                         docker image prune -f
                     '''
-                    
+              
                     // Copy file to remote server 
                     sshPublisher(publishers: [sshPublisherDesc(configName: 't2micro_ubuntu_test', verbose: 'true',
                     transfers: [ sshTransfer(flatten: false,
@@ -53,7 +53,6 @@ pipeline {
                         execCommand: command
                         )])
                     ])
-                    
                 }
             }
         }
