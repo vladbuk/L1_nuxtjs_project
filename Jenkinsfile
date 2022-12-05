@@ -4,7 +4,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5'))
     }
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('docker-hub-lightsail')
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-access-token')
     }
     stages {
         stage('Building') {
