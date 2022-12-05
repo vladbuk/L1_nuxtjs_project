@@ -1,73 +1,66 @@
 pipeline {
-    //agent {
-    //    docker { image 'node:14' }
-    //}
     agent { dockerfile true }
-    //agent any
-
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-lightsail')
+    }
     stages {
-        stage('Preparing') {
-            steps {
-                echo 'Preparing'
-                /*dir('$WORKSPACE') {
-                    deleteDir()
-                }*/
-                //cleanWs()
-                //sh 'cd $WORKSPACE'
-                sh 'rm -rf dist'
-                git branch: 'main', url: 'https://github.com/vladbuk/L1_nuxtjs_project.git'
-                //sh 'chown -R 113:119 .npm'
-                //sh 'npm init --yes'
-                sh 'yarn install'
-            }
-        }
         stage('Building') {
             steps {
                 echo 'Building'
-                sh 'yarn build'
-                sh 'yarn generate'
+                sh 'rm -rf dist node_modules'
+                git branch: 'docker', url: 'https://github.com/vladbuk/L1_nuxtjs_project.git'
+                sh 'docker build -t nuxt-docker:${BUILD_NUMBER} -f Dockerfile_deploy .'
             }
-        }     
-        stage('Archiving') {
+        }
+        stage('Pushing') {
             steps {
-		            echo 'Archiving'
-                archiveArtifacts artifacts: 'dist/**/*', followSymlinks: false
+                echo 'Pushing'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push vladbuk/nuxt-docker:${BUILD_NUMBER}'
             }
         }
         
         stage('Deploying') {
             steps {
                 script{
-                    sh "zip -r dist.zip dist/*"
-                    echo 'Local files.....'
-                    sh 'ls -l'
-                    
                     command='''
-                        cd /var/www/html
-                        rm -rf dist/
-                        unzip -o -d ./ dist.zip
-                        ls -l
-                        date
+                        mkdir -p ${HOME}/nuxt-docker && cd ${HOME}/nuxt-docker/
+                        docker pull vladbuk/nuxt-docker:${BUILD_NUMBER}
+
+                        CONTAINER_ID=$(docker ps -aqf name=nuxt-docker)
+                        if [[ $CONTAINER_ID ]]
+                        then
+                            docker rm -f $CONTAINER_ID
+                            echo "Container $CONTAINER_ID deleted and will be created again."
+                            docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:${BUILD_NUMBER}
+                        else
+                            echo -e "Container does not exist. It will be created.\n"
+                            docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:${BUILD_NUMBER}
+                        fi
+                        CONTAINER_ID=$CONTAINER_ID
+                        echo -e "Container id = $CONTAINER_ID\n"
+                        docker image prune -f
                     '''
-                    
-                    // Set access owner
-                    //sshPublisher(publishers: [sshPublisherDesc(configName: 't2micro_ubuntu_test', verbose: 'true',
-                    //    transfers: [ sshTransfer(execCommand: 'sudo chown ubuntu:ubuntu /var/www/html' )])])
                     
                     // Copy file to remote server 
                     sshPublisher(publishers: [sshPublisherDesc(configName: 't2micro_ubuntu_test', verbose: 'true',
                     transfers: [ sshTransfer(flatten: false,
                         //remoteDirectory: '/',
-                        sourceFiles: 'dist.zip',
+                        //sourceFiles: 'dist.zip',
                         execCommand: command
                         )])
                     ])
-
-                    // Execute commands
-                    //sshPublisher(publishers: [sshPublisherDesc(configName: 't2micro_ubuntu_test',
-                    //    transfers: [ sshTransfer(execCommand: command )])])
+                    
                 }
             }
         }
     }
+    post {
+        always {
+            sh 'docker logout'
+    }
+  }
 }
