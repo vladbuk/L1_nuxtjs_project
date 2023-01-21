@@ -1,5 +1,5 @@
 pipeline {
-  agent { label: agent-ut-sonar }
+  agent { label 'agent-ut-sonar' }
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
     }
