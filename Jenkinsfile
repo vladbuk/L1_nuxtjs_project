@@ -9,15 +9,8 @@ pipeline {
         stage('Preparing') {
             steps {
                 echo 'Preparing'
-                /*dir('$WORKSPACE') {
-                    deleteDir()
-                }*/
-                //cleanWs()
-                //sh 'cd $WORKSPACE'
                 sh 'rm -rf dist'
-                git branch: 'main', url: 'https://github.com/vladbuk/L1_nuxtjs_project.git'
-                //sh 'chown -R 113:119 .npm'
-                //sh 'npm init --yes'
+                git branch: 'test', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
                 sh 'yarn install'
             }
         }
@@ -57,7 +50,7 @@ pipeline {
                     // Copy file to remote server 
                     sshPublisher(publishers: [sshPublisherDesc(configName: 't2micro_ubuntu_test', verbose: 'true',
                     transfers: [ sshTransfer(flatten: false,
-                        //remoteDirectory: '/',
+                        remoteDirectory: '/var/www/html',
                         sourceFiles: 'dist.zip',
                         execCommand: command
                         )])
