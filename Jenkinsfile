@@ -12,7 +12,7 @@ pipeline {
                 echo 'Building'
                 cleanWs()
                 //sh 'rm -rf dist node_modules'
-                git branch: 'docker', url: 'https://github.com/vladbuk/L1_nuxtjs_project.git'
+                git branch: 'test', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
                 sh 'docker build --platform linux/amd64 -t vladbuk/nuxt-docker:${BUILD_NUMBER} -f Dockerfile_deploy .'
             }
         }
