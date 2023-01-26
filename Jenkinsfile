@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'agent-ut-sonar' }
+  agent { label 'agent-ut-wpprod' }
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
     }
