@@ -26,6 +26,7 @@ pipeline {
                   echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
                   docker push vladbuk/nuxt-docker:test-${BUILD_NUMBER}
                   docker push vladbuk/nuxt-docker:latest
+                  docker rmi -f $(docker images -q vladbuk/nuxt-docker)
                 '''
                 //sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 //sh 'docker push vladbuk/nuxt-docker:${BUILD_NUMBER}'
