@@ -14,10 +14,10 @@ pipeline {
                 cleanWs()
                 //sh 'rm -rf dist node_modules'
                 git branch: 'docker', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
-                sh '''
-                  docker build --platform linux/amd64 -t vladbuk/nuxt-docker:${BRANCH}-${BUILD_NUMBER} -f Dockerfile_deploy .
-                  docker tag vladbuk/nuxt-docker:${BRANCH}-${BUILD_NUMBER} vladbuk/nuxt-docker:latest
-                  '''
+                sh """
+                  docker build --platform linux/amd64 -t vladbuk/nuxt-docker:${BRANCH_NAME}-${BUILD_NUMBER} -f Dockerfile_deploy .
+                  docker tag vladbuk/nuxt-docker:${BRANCH_NAME}-${BUILD_NUMBER} vladbuk/nuxt-docker:latest
+                  """
             }
         }
         stage('Pushing') {
