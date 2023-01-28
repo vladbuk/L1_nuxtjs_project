@@ -40,7 +40,7 @@ pipeline {
                         mkdir -p ${HOME}/nuxt-docker && cd ${HOME}/nuxt-docker/
                         docker pull vladbuk/nuxt-docker:${BRANCH}-$BUILD_NUMBER
 
-                        CONTAINER_ID=$(docker ps -aqf name=nuxt-docker)
+                        CONTAINER_ID=`docker ps -aqf name=nuxt-docker`
                         if [[ $CONTAINER_ID ]]
                         then
                             docker rm -f $CONTAINER_ID
