@@ -12,7 +12,7 @@ pipeline {
                 echo 'Building stage'
                 cleanWs()
                 //sh 'rm -rf dist node_modules'
-                git branch: 'docker', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
+                git branch: 'test', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
                 sh '''
                   docker build -t vladbuk/nuxt-docker:test-${BUILD_NUMBER} -f Dockerfile_deploy .
                   docker tag vladbuk/nuxt-docker:test-${BUILD_NUMBER} vladbuk/nuxt-docker:latest
@@ -38,8 +38,9 @@ pipeline {
                     command='''
                         mkdir -p $HOME/nuxt-docker && cd $HOME/nuxt-docker/
                         docker pull vladbuk/nuxt-docker:test-${BUILD_NUMBER}
+                        GET_ID="docker ps -aqf name=nuxt-docker"
 
-                        CONTAINER_ID=$(docker ps -aqf name=nuxt-docker)
+                        CONTAINER_ID=$(eval $GET_ID)
                         if [[ $CONTAINER_ID ]]
                         then
                             docker rm -f $CONTAINER_ID
@@ -49,7 +50,7 @@ pipeline {
                             echo -e Container does not exist. It will be created.\n
                             docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:test-${BUILD_NUMBER}
                         fi
-                        CONTAINER_ID=$CONTAINER_ID
+                        CONTAINER_ID=$(eval $GET_ID)
                         echo -e "Container id = $CONTAINER_ID\n"
                         docker image prune -f
                     '''
