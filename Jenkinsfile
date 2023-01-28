@@ -44,14 +44,14 @@ pipeline {
                         if [[ $CONTAINER_ID ]]
                         then
                             docker rm -f $CONTAINER_ID
-                            echo "Container $CONTAINER_ID deleted and will be created again."
+                            echo Container $CONTAINER_ID deleted and will be created again.
                             docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:${BRANCH}-$BUILD_NUMBER
                         else
-                            echo -e "Container does not exist. It will be created.\n"
+                            echo -e Container does not exist. It will be created.\n
                             docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:${BRANCH}-$BUILD_NUMBER
                         fi
                         CONTAINER_ID=$CONTAINER_ID
-                        echo -e "Container id = $CONTAINER_ID\n"
+                        echo -e Container id = $CONTAINER_ID\n
                         docker image prune -f
                     """
               
