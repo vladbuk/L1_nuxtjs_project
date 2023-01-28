@@ -13,14 +13,22 @@ pipeline {
                 cleanWs()
                 //sh 'rm -rf dist node_modules'
                 git branch: 'docker', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
-                sh 'docker build --platform linux/amd64 -t vladbuk/nuxt-docker:${BUILD_NUMBER} -f Dockerfile_deploy .'
+                sh '''
+                  docker build --platform linux/amd64 -t vladbuk/nuxt-docker:${BRANCH_NAME}-${BUILD_NUMBER} -f Dockerfile_deploy .
+                  docker tag vladbuk/nuxt-docker:${BRANCH_NAME}-${BUILD_NUMBER} vladbuk/nuxt-docker:latest
+                  '''
             }
         }
         stage('Pushing') {
             steps {
                 echo 'Pushing'
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push vladbuk/nuxt-docker:${BUILD_NUMBER}'
+                sh '''
+                  echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                  docker push vladbuk/nuxt-docker:${BRANCH_NAME}-${BUILD_NUMBER}
+                  docker push vladbuk/nuxt-docker:latest
+                '''
+                //sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                //sh 'docker push vladbuk/nuxt-docker:${BUILD_NUMBER}'
             }
         }
         
@@ -29,17 +37,17 @@ pipeline {
                 script{
                     command='''
                         mkdir -p ${HOME}/nuxt-docker && cd ${HOME}/nuxt-docker/
-                        docker pull vladbuk/nuxt-docker:${BUILD_NUMBER}
+                        docker pull vladbuk/nuxt-docker:${BRANCH_NAME}-${BUILD_NUMBER}
 
                         CONTAINER_ID=$(docker ps -aqf name=nuxt-docker)
                         if [[ $CONTAINER_ID ]]
                         then
                             docker rm -f $CONTAINER_ID
                             echo "Container $CONTAINER_ID deleted and will be created again."
-                            docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:${BUILD_NUMBER}
+                            docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:${BRANCH_NAME}-${BUILD_NUMBER}
                         else
                             echo -e "Container does not exist. It will be created.\n"
-                            docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:${BUILD_NUMBER}
+                            docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker:${BRANCH_NAME}-${BUILD_NUMBER}
                         fi
                         CONTAINER_ID=$CONTAINER_ID
                         echo -e "Container id = $CONTAINER_ID\n"
