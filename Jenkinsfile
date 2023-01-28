@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-access-token')
-        BRANCH = 'docker'
+        BRANCH = "docker"
     }
     stages {
         stage('Building') {
@@ -15,8 +15,8 @@ pipeline {
                 //sh 'rm -rf dist node_modules'
                 git branch: 'docker', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
                 sh """
-                  docker build --platform linux/amd64 -t vladbuk/nuxt-docker:${env.BRANCH}-${BUILD_NUMBER} -f Dockerfile_deploy .
-                  docker tag vladbuk/nuxt-docker:${env.BRANCH}-${BUILD_NUMBER} vladbuk/nuxt-docker:latest
+                  docker build --platform linux/amd64 -t vladbuk/nuxt-docker:${BRANCH}-${BUILD_NUMBER} -f Dockerfile_deploy .
+                  docker tag vladbuk/nuxt-docker:${BRANCH}-${BUILD_NUMBER} vladbuk/nuxt-docker:latest
                   """
             }
         }
