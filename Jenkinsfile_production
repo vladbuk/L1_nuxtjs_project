@@ -24,8 +24,8 @@ pipeline {
                 echo 'Pushing stage'
                 sh '''
                   echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                  docker push nuxt-docker-production:prod-${BUILD_NUMBER}
-                  docker push nuxt-docker-production:latest
+                  docker push vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER}
+                  docker push vladbuk/nuxt-docker-production:latest
                   docker rmi -f $(docker images -q vladbuk/nuxt-docker-production)
                 '''
             }
