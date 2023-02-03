@@ -12,10 +12,10 @@ pipeline {
                 echo 'Building stage'
                 cleanWs()
                 //sh 'rm -rf dist node_modules'
-                git branch: 'test', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
+                git branch: 'main', credentialsId: 'vladbuk-github', url: 'git@github.com:vladbuk/L1_nuxtjs_project.git'
                 sh '''
-                  docker build -t vladbuk/nuxt-docker:test-${BUILD_NUMBER} -f Dockerfile_deploy .
-                  docker tag vladbuk/nuxt-docker:test-${BUILD_NUMBER} vladbuk/nuxt-docker:latest
+                  docker build -t vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER} -f Dockerfile_deploy .
+                  docker tag vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER} vladbuk/nuxt-docker-production:latest
                   '''
             }
         }
@@ -24,12 +24,10 @@ pipeline {
                 echo 'Pushing stage'
                 sh '''
                   echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                  docker push vladbuk/nuxt-docker:test-${BUILD_NUMBER}
-                  docker push vladbuk/nuxt-docker:latest
-                  docker rmi -f $(docker images -q vladbuk/nuxt-docker)
+                  docker push nuxt-docker-production:prod-${BUILD_NUMBER}
+                  docker push nuxt-docker-production:latest
+                  docker rmi -f $(docker images -q vladbuk/nuxt-docker-production)
                 '''
-                //sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                //sh 'docker push vladbuk/nuxt-docker:${BUILD_NUMBER}'
             }
         }
         
@@ -38,7 +36,7 @@ pipeline {
                 script{
                     command='''
                         mkdir -p $HOME/nuxt-docker && cd $HOME/nuxt-docker/
-                        docker pull vladbuk/nuxt-docker:test-${BUILD_NUMBER}
+                        docker pull vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER}
                         GET_ID="docker ps -aqf name=nuxt-docker"
 
                         CONTAINER_ID=$(eval $GET_ID)
@@ -46,10 +44,10 @@ pipeline {
                         then
                             docker rm -f $CONTAINER_ID
                             echo Container $CONTAINER_ID deleted and will be created again.
-                            docker run -d -t --name nuxt-docker --restart always -p 80:8080 vladbuk/nuxt-docker:test-${BUILD_NUMBER}
+                            docker run -d -t --name nuxt-docker --restart always -p 80:8080 vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER}
                         else
                             echo -e Container does not exist. It will be created.\n
-                            docker run -d -t --name nuxt-docker --restart always -p 80:8080 vladbuk/nuxt-docker:test-${BUILD_NUMBER}
+                            docker run -d -t --name nuxt-docker --restart always -p 80:8080 vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER}
                         fi
                         CONTAINER_ID=$(eval $GET_ID)
                         echo -e "Container id = $CONTAINER_ID\n"
@@ -57,7 +55,7 @@ pipeline {
                     '''
               
                     // Copy file to remote server 
-                    sshPublisher(publishers: [sshPublisherDesc(configName: 't2micro_ubuntu_test', verbose: 'true',
+                    sshPublisher(publishers: [sshPublisherDesc(configName: 't2micro_ubuntu_prod', verbose: 'true',
                     transfers: [ sshTransfer(flatten: false,
                         //remoteDirectory: '/',
                         //sourceFiles: 'dist.zip',
