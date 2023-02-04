@@ -75,8 +75,14 @@ pipeline {
             steps {
                 echo 'Testing container working'
                 sh '''
-                    STATUS=$(curl -ILs test.vladbuk.site | head -n 1 | cut -d$' ' -f2)
-                    if [[ $STATUS -ge 400 ]]; then exit 1; fi
+                    SITEURL=test.vladbuk.site
+                    ping -c 1 ${SITEURL} > /dev/null 2>&1; echo $?
+                    if curl -s --head  --request GET ${SITEURL} | grep "200 OK" > /dev/null; then 
+                        echo "${SITEURL} is UP"
+                    else
+                        echo "${SITEURL} is DOWN"
+                        exit 1
+                    fi
                 '''
             }
         }
