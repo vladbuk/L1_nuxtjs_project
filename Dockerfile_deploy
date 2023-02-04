@@ -1,12 +1,12 @@
-FROM node:14
+FROM node:16
 
 WORKDIR /app
 
 COPY ./ /app/
 
 RUN apt-get update && apt-get install -y zip mc iputils-ping && \
-    yarn install && yarn build
+    npm install && npm run build
 
-ENTRYPOINT ["yarn", "start"] 
+ENTRYPOINT ["npm", "run". "start"] 
 
 EXPOSE 8080
