@@ -1,5 +1,7 @@
 pipeline {
-  agent { label 'agent-ut-wpprod' }
+    agent {
+        label 'agent-ut-wpprod'
+    }
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
     }
@@ -19,6 +21,7 @@ pipeline {
                   '''
             }
         }
+
         stage('Pushing') {
             steps {
                 echo 'Pushing stage'
@@ -32,7 +35,7 @@ pipeline {
                 //sh 'docker push vladbuk/nuxt-docker:${BUILD_NUMBER}'
             }
         }
-        
+
         stage('Deploying') {
             steps {
                 script{
@@ -55,7 +58,7 @@ pipeline {
                         echo -e "Container id = $CONTAINER_ID\n"
                         docker image prune -f
                     '''
-              
+
                     // Copy file to remote server 
                     sshPublisher(publishers: [sshPublisherDesc(configName: 't2micro_ubuntu_test', verbose: 'true',
                     transfers: [ sshTransfer(flatten: false,
@@ -67,7 +70,18 @@ pipeline {
                 }
             }
         }
+
+        stage('Testing') {
+            steps {
+                echo 'Testing container working'
+                sh '''
+                    STATUS=$(curl -ILs test.vladbuk.site | head -n 1 | cut -d$' ' -f2)
+                    if [[ $STATUS -ge 400 ]]; then exit 1; fi
+                '''
+            }
+        }
     }
+
     post {
         always {
             sh 'docker logout'

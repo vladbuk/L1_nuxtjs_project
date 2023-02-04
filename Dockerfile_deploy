@@ -7,6 +7,6 @@ COPY ./ /app/
 RUN apt-get update && apt-get install -y zip mc iputils-ping && \
     npm install && npm run build
 
-ENTRYPOINT ["npm", "run". "start"] 
+ENTRYPOINT ["npm", "run", "start"]
 
 EXPOSE 8080
