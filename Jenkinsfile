@@ -74,6 +74,7 @@ pipeline {
         stage('Testing') {
             steps {
                 echo 'Testing container working'
+                sh 'sleep 10'
                 sh '''
                     SITEURL=test.vladbuk.site
                     ping -c 1 ${SITEURL} > /dev/null 2>&1; echo $?
