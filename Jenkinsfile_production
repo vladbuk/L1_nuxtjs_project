@@ -44,10 +44,10 @@ pipeline {
                         then
                             docker rm -f $CONTAINER_ID
                             echo Container $CONTAINER_ID deleted and will be created again.
-                            docker run -d -t --name nuxt-docker --restart always -p 80:8080 vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER}
+                            docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER}
                         else
                             echo -e Container does not exist. It will be created.\n
-                            docker run -d -t --name nuxt-docker --restart always -p 80:8080 vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER}
+                            docker run -d -t --name nuxt-docker --restart always -p 8080:8080 vladbuk/nuxt-docker-production:prod-${BUILD_NUMBER}
                         fi
                         CONTAINER_ID=$(eval $GET_ID)
                         echo -e "Container id = $CONTAINER_ID\n"
@@ -85,7 +85,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             sh 'docker logout'
