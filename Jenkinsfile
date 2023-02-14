@@ -78,7 +78,7 @@ pipeline {
                 sh '''
                     SITEURL=test.vladbuk.site
                     ping -c 1 ${SITEURL} > /dev/null 2>&1; echo $?
-                    CURLTEST="curl -s --head  --request GET http://${SITEURL} | grep '200 OK' > /dev/null"
+                    CURLTEST="curl -s -L --head  --request GET https://${SITEURL} | grep '200' > /dev/null"
                     if $(eval ${CURLTEST})
                     then
                         echo "${SITEURL} is UP"
